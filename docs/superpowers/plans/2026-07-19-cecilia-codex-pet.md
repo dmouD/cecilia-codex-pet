@@ -196,7 +196,7 @@ Expected: commit succeeds and `git status --short` is clean.
 
 Use the local image viewer on `assets/pet/cecilia-idle.png` and the role-based reference pack. Treat the approved master as the canonical edit target; use supporting references only for character/outfit cross-checks and never to drift from the approved master.
 
-Expected: both images are visible before the first edit call.
+Expected: the approved master and all five supporting reference images are visible before the first edit call.
 
 - [ ] **Step 2: Generate the open-eye blink frame as a minimal edit**
 
@@ -206,7 +206,7 @@ Use this exact edit instruction, with a flat `#00ff00` removable background:
 Use case: precise-object-edit
 Asset type: blink frame for a Codex pet sprite
 Primary request: Change only the eyes from the approved closed smile to a brief softly opened expression. Keep the exact same character, pose, silhouette, crop, face, mouth, blush, hair strands, hood partitions, clothing, line weight, colors, and proportions.
-Input images: Image 1 is the approved master edit target; supporting reference images retain their Task 1 roles for face/line style, full outfit, cape layers, under-dress, and hair cross-checks.
+Input images: Image 1 is `assets/pet/cecilia-idle.png`, the sole identity, face, hair, outfit, line-style, palette, proportions, canvas, and padding authority for this variant. The five original references are cross-check-only: they may identify an accidental omission but must never override, restyle, or reshape the approved master.
 Constraints: change only the eyes; flat uniform #00ff00 background; no shadow, text, watermark, pink creature, or new prop.
 ```
 
@@ -219,7 +219,7 @@ Use the same invariant prefix for every call:
 ```text
 Use case: precise-object-edit
 Asset type: state sprite for a Codex interactive pet
-Input images: Image 1 is the user-approved master edit target; supporting reference images retain their Task 1 roles for face/line style, full outfit, cape layers, under-dress, and hair cross-checks.
+Input images: Image 1 is `assets/pet/cecilia-idle.png`, the sole identity, face, hair, outfit, line-style, palette, proportions, canvas, and padding authority for this variant. The five original references are cross-check-only: they may identify an accidental omission but must never override, restyle, or reshape the approved master.
 Invariants: preserve the exact character identity, face proportions, bang grouping, one-sided hair-length relationship, cream/black hood partition, clothing construction, outline style, palette, body scale, canvas size, and padding. Do not redesign any feature. Use a perfectly flat uniform #00ff00 removable background with no shadow, floor, gradient, text, or watermark.
 ```
 
@@ -1188,7 +1188,7 @@ Verify with DOM snapshots and focused interaction checks:
 
 - [ ] **Step 4: Perform responsive and reduced-motion visual QA**
 
-Inspect at widths 320 px, 420 px, and 520 px. Temporarily emulate `prefers-reduced-motion: reduce` and confirm looping transforms/particles stop. Compare the character at 280 px height against the original reference for the final fidelity check.
+Inspect at widths 320 px, 420 px, and 520 px. Temporarily emulate `prefers-reduced-motion: reduce` and confirm looping transforms/particles stop. Compare the character at 280 px height against `assets/pet/cecilia-idle.png` for the final fidelity check; the five-reference pack remains cross-check-only and must not override, restyle, or reshape the approved master.
 
 Expected: no clipping, overlap, green fringe, identity drift, unreadable controls, or large looping motion under reduced-motion mode.
 
