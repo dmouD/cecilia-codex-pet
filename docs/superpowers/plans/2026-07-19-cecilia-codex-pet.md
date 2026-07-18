@@ -11,6 +11,7 @@
 ## Global Constraints
 
 - The user-supplied reference pack has explicit roles: the full-body bouquet image governs the complete outfit and leg proportions; the close-up smiling image governs face, hood palette, and simplified line style; the other three new images cross-check cape layers, cream ruffles, under-dress, and hair structure.
+- Approval lock: controller-confirmed conversation evidence records explicit user approval on 2026-07-19 for `assets/pet/cecilia-idle.png`. Before approval, the role-based reference pack governed reconstruction; after approval, this PNG is the canonical runtime identity and style baseline. Every state edit must use it as the edit target and preserve it exactly; supporting references are cross-checks only and must never cause visual drift from the approved master.
 - Do not use the earlier brainstorming mockup as a visual reference.
 - Preserve the cream outer hood, dark gray-black hood interior and rear hair layer, gray-olive front hair, exact bang grouping and one-sided long-hair silhouette, rounded face, wine-red closed-eye lines, diagonal pink blush, and small open smile.
 - The correct full outfit is a dark hooded cape with cream trim/patches over a cream high-neck ruffled blouse and wide sleeves, a dark short dress/skirt layer with pale hem ruffles, dark thigh-high socks, and small dark shoes. Never extend the cream layer into a floor-length robe.
@@ -29,14 +30,14 @@
 - `assets/references/cecilia-cape-crawl.jpg` — cream blouse/cape opening cross-check.
 - `assets/references/cecilia-underdress.jpg` — white blouse, dark under-dress, and hair-structure cross-check.
 - `assets/source/cecilia-master-keyed.png` — retained chroma-key master source for reproducible alpha extraction.
-- `assets/pet/cecilia-idle.png` — approved canonical master and runtime idle/closed-eye sprite.
+- `assets/pet/cecilia-idle.png` — controller-confirmed user-approved (2026-07-19) canonical runtime identity/style baseline and idle/closed-eye sprite; every state edit derives from and preserves this master exactly.
 - `assets/pet/cecilia-idle-open.png` — brief open-eye blink frame derived from the master.
 - `assets/pet/cecilia-thinking.png` — thinking state derived from the master.
 - `assets/pet/cecilia-coding.png` — coding state derived from the master.
 - `assets/pet/cecilia-success.png` — success state derived from the master.
 - `assets/pet/cecilia-error.png` — error state derived from the master.
 - `assets/pet/cecilia-sleeping.png` — sleeping state derived from the master.
-- `assets/pet/pink-companion.png` — occasional companion derived from the creature in the first reference.
+- `assets/pet/pink-companion.png` — occasional companion derived from the creature in `assets/references/cecilia-face-style.png`.
 - `package.json` — dependency-free ES-module and test commands.
 - `src/pet-state-machine.js` — persistent/transient state rules and inactivity sleep.
 - `src/interaction-controller.js` — click, multi-click, and bounded drag behavior.
@@ -191,9 +192,9 @@ Expected: commit succeeds and `git status --short` is clean.
 - Consumes: user-approved `assets/pet/cecilia-idle.png` and the role-based five-image pack under `assets/references/`.
 - Produces: runtime RGBA assets named exactly as listed; `src/pet-manifest.js` in Task 5 relies on these paths.
 
-- [ ] **Step 1: Inspect both the approved master and original reference before editing**
+- [ ] **Step 1: Inspect the approved master and role-based supporting references before editing**
 
-Use the local image viewer on both paths. Treat the master as the edit target and the original image as a supporting fidelity reference.
+Use the local image viewer on `assets/pet/cecilia-idle.png` and the role-based reference pack. Treat the approved master as the canonical edit target; use supporting references only for character/outfit cross-checks and never to drift from the approved master.
 
 Expected: both images are visible before the first edit call.
 
@@ -244,7 +245,7 @@ Use the original reference plus this prompt:
 Use case: stylized-concept
 Asset type: occasional companion layer for a Codex pet
 Primary request: Isolate and reconstruct only the small round muted-pink creature held by Cecilia in the original reference, matching its simple white oval eyes, tiny mouth, dark wine-red top marking, soft hand-drawn outline, and low-saturation fill.
-Input images: Image 1 is `assets/references/cecilia-face-style.png` and is the sole visual reference for the creature.
+Input images: Image 1 is `assets/references/cecilia-face-style.png`, the dedicated visual reference for the creature.
 Composition/framing: creature alone, centered with generous padding, no Cecilia body parts.
 Scene/backdrop: perfectly flat uniform #00ff00 removable background, no floor, shadow, gradient, or texture.
 Constraints: preserve its simple reference appearance; no redesign, limbs only if already implied by the reference; no text or watermark.
@@ -1122,7 +1123,7 @@ Create `README.md` with these exact sections:
 ````markdown
 # 塞西莉亚 Codex 宠物
 
-一个离线、自包含的 Codex 互动宠物页面。角色素材严格基于项目内的第一张用户参考图制作。
+一个离线、自包含的 Codex 互动宠物页面。角色素材在批准前按项目内五张角色分工参考图还原；用户于 2026-07-19 明确批准后，`assets/pet/cecilia-idle.png` 是所有运行时状态的唯一视觉基线。
 
 ## 运行
 
