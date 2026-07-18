@@ -10,10 +10,11 @@
 
 ## Global Constraints
 
-- The first user-supplied image is the sole primary visual authority for character design, line style, facial proportions, and palette.
+- The user-supplied reference pack has explicit roles: the full-body bouquet image governs the complete outfit and leg proportions; the close-up smiling image governs face, hood palette, and simplified line style; the other three new images cross-check cape layers, cream ruffles, under-dress, and hair structure.
 - Do not use the earlier brainstorming mockup as a visual reference.
 - Preserve the cream outer hood, dark gray-black hood interior and rear hair layer, gray-olive front hair, exact bang grouping and one-sided long-hair silhouette, rounded face, wine-red closed-eye lines, diagonal pink blush, and small open smile.
-- Extend unseen lower clothing only from the visible cream wide sleeves, dark inner layer, and pale ruffle language; do not add armor, modern clothing, a new profession costume, or prominent new accessories.
+- The correct full outfit is a dark hooded cape with cream trim/patches over a cream high-neck ruffled blouse and wide sleeves, a dark short dress/skirt layer with pale hem ruffles, dark thigh-high socks, and small dark shoes. Never extend the cream layer into a floor-length robe.
+- The master has no bouquet, scarf, snowman, second character, or other scene prop.
 - Generate only the master illustration first. Do not generate state variants or integrate the page until the user explicitly approves that master.
 - The pink creature is an occasional companion only: success chance, multi-click easter egg, and rare long-idle peek.
 - Final runtime assets are local transparent PNG files; no remote images, fonts, scripts, telemetry, or user-data transmission.
@@ -22,7 +23,11 @@
 
 ## File Map
 
-- `assets/references/cecilia-reference-01.jpg` — stable project copy of the first user reference.
+- `assets/references/cecilia-face-style.png` — face, hood palette, and simplified line-style authority.
+- `assets/references/cecilia-fullbody-outfit.jpg` — full outfit and leg-proportion authority.
+- `assets/references/cecilia-cape-standing.jpg` — standing cape-layer cross-check.
+- `assets/references/cecilia-cape-crawl.jpg` — cream blouse/cape opening cross-check.
+- `assets/references/cecilia-underdress.jpg` — white blouse, dark under-dress, and hair-structure cross-check.
 - `assets/source/cecilia-master-keyed.png` — retained chroma-key master source for reproducible alpha extraction.
 - `assets/pet/cecilia-idle.png` — approved canonical master and runtime idle/closed-eye sprite.
 - `assets/pet/cecilia-idle-open.png` — brief open-eye blink frame derived from the master.
@@ -52,47 +57,55 @@
 ### Task 1: Produce and approve the strict-reference master illustration
 
 **Files:**
-- Create: `assets/references/cecilia-reference-01.jpg`
+- Create: `assets/references/cecilia-face-style.png`
+- Create: `assets/references/cecilia-fullbody-outfit.jpg`
+- Create: `assets/references/cecilia-cape-standing.jpg`
+- Create: `assets/references/cecilia-cape-crawl.jpg`
+- Create: `assets/references/cecilia-underdress.jpg`
 - Create: `assets/source/cecilia-master-keyed.png`
 - Create: `assets/pet/cecilia-idle.png`
 
 **Interfaces:**
-- Consumes: `C:\Users\30735\AppData\Local\Temp\codex-clipboard-efea47a5-5e74-459a-b0da-052c36f8ba8e.jpg`
+- Consumes: the five new local references listed in Step 1.
 - Produces: approved transparent PNG `assets/pet/cecilia-idle.png`; all later image edits must consume this file.
 
-- [ ] **Step 1: Copy the exact first reference into the project**
+- [ ] **Step 1: Copy the exact new reference pack into the project**
 
 Run:
 
 ```powershell
 New-Item -ItemType Directory -Force -Path 'assets/references','assets/source','assets/pet' | Out-Null
-Copy-Item -LiteralPath 'C:\Users\30735\AppData\Local\Temp\codex-clipboard-efea47a5-5e74-459a-b0da-052c36f8ba8e.jpg' -Destination 'assets/references/cecilia-reference-01.jpg'
+Copy-Item -LiteralPath 'C:\Users\30735\AppData\Local\Temp\codex-clipboard-14982ab0-28c6-47c8-9ee2-9f452af2659b.png' -Destination 'assets/references/cecilia-face-style.png'
+Copy-Item -LiteralPath 'C:\Users\30735\AppData\Local\Temp\codex-clipboard-438b62af-e010-41d9-87c7-4438193f9366.jpg' -Destination 'assets/references/cecilia-fullbody-outfit.jpg'
+Copy-Item -LiteralPath 'C:\Users\30735\AppData\Local\Temp\codex-clipboard-b136b609-4dd0-4103-8de0-d0ce437bb7c1.jpg' -Destination 'assets/references/cecilia-cape-standing.jpg'
+Copy-Item -LiteralPath 'C:\Users\30735\AppData\Local\Temp\codex-clipboard-aa7a2888-8b34-4330-aa7e-e29c8ad9b4b9.jpg' -Destination 'assets/references/cecilia-cape-crawl.jpg'
+Copy-Item -LiteralPath 'C:\Users\30735\AppData\Local\Temp\codex-clipboard-a0d2857d-c190-4b99-a6c3-988048b5d478.jpg' -Destination 'assets/references/cecilia-underdress.jpg'
 ```
 
-Expected: `Get-FileHash assets/references/cecilia-reference-01.jpg` succeeds and the file size is non-zero.
+Expected: `Get-FileHash assets/references/*` succeeds and every file size is non-zero.
 
-- [ ] **Step 2: Inspect the project copy before generation**
+- [ ] **Step 2: Inspect all five project references before generation**
 
-Use the local image viewer on `assets/references/cecilia-reference-01.jpg`. Record a checklist result for: hood cream/black partition, gray-olive bang grouping, one-sided long-hair silhouette, round face, wine-red closed-eye lines, diagonal blush, small open smile, cream wide sleeve, and dark inner layer.
+Use the local image viewer on all five files. Record role-specific checklist results for: close-up face/hood/line style; full-body cape, cream blouse and sleeves, dark short skirt layer, pale hem ruffle, dark thigh-high socks and small shoes; standing/crawl cape layers; under-dress and hair structure.
 
-Expected: every listed feature is visible in the inspected image; do not use the HTML brainstorming mockup as input.
+Expected: every listed feature is grounded in at least one designated reference; do not use the HTML brainstorming mockup or the rejected long-robe master as visual input.
 
 - [ ] **Step 3: Generate exactly one full-body keyed master with the built-in image tool**
 
-Use the reference as a strict identity/style reference and use this exact prompt:
+Use the five references with their designated roles and use this exact prompt:
 
 ```text
 Use case: stylized-concept
 Asset type: canonical full-body raster sprite for a Codex interactive pet
-Primary request: Extend the exact Cecilia character shown in Image 1 into one clean full-body 2.5-head chibi standing pose. This is a high-fidelity character reconstruction, not a redesign. Match Image 1 first; add no creative costume changes.
-Input images: Image 1 is the sole primary authority for character identity, face proportions, hair silhouette, hood construction, line style, and palette.
+Primary request: Reconstruct Cecilia as one clean full-body 2.5-head chibi standing sprite. This is a high-fidelity synthesis of the supplied references, not a redesign. Correct the previously rejected floor-length cream robe by following the full-body outfit reference exactly.
+Input images: Image 1 (face-style) governs the smiling face, hood palette, and simplified hand-drawn line style. Image 2 (fullbody-outfit) governs the complete clothing structure and leg proportions, while excluding its flower bouquet. Image 3 (cape-standing) cross-checks standing cape layers. Image 4 (cape-crawl) cross-checks the cream blouse, wide sleeves, and cape opening. Image 5 (underdress) cross-checks the white/cream blouse, dark short dress/skirt, and hair structure.
 Scene/backdrop: perfectly flat solid #00ff00 chroma-key background for later removal; one uniform color, no floor, gradient, texture, shadow, reflection, or lighting variation.
-Subject: Cecilia alone, relaxed front-facing standing pose, arms naturally near the body. Preserve the cream outer hood, dark gray-black hood interior and rear hair layer, gray-olive front hair, the same bang grouping and one-sided long-hair relationship, rounded face, wine-red closed-eye lines, diagonal pink blush, and small open smiling mouth. Extend the unseen lower outfit only from the visible cream wide sleeves, dark inner layer, and pale ruffle vocabulary in Image 1.
-Style/medium: the same soft hand-drawn Japanese chibi style as Image 1, slightly wobbly dark outline, flat low-saturation fills, minimal soft shading, simplified facial features.
+Subject: Cecilia alone, relaxed front-facing standing pose, arms naturally near the body. Preserve the cream outer hood, dark gray-black hood interior and rear hair layer, gray-olive front hair, the same bang grouping and one-sided long-hair relationship, rounded face, wine-red closed-eye lines, diagonal pink blush, and small open smiling mouth. Her correct outfit is: dark hooded cape with cream trim and pale patches; cream high-neck ruffled blouse and wide sleeves; dark short dress/skirt layer ending above the knees with pale hem ruffles; dark gray-black thigh-high socks; small dark shoes. The cape may hang low behind her, but the cream blouse must not become a floor-length outer robe.
+Style/medium: the same soft simplified hand-drawn Japanese chibi style as the face-style reference, slightly wobbly dark outline, flat low-saturation fills, minimal soft shading, simplified facial features.
 Composition/framing: full body centered, generous even padding on every side, no cropping, sprite readable at 240–320 px tall.
-Color palette: match Image 1; cream, gray-olive, charcoal-black, pale skin, muted pink blush, restrained wine-red accents only where supported by the reference.
-Constraints: strict reference fidelity; fully opaque character with crisp separable edges; no #00ff00 anywhere on the subject; no cast or contact shadow; no pink creature in this master; no code board; no text; no watermark.
-Avoid: altered bangs, symmetrical replacement hairstyle, changed hood color blocking, open eyes in the master, detailed painterly rendering, glossy anime rendering, 3D, realistic anatomy, armor, modern clothing, new jewelry, extra characters, scenery.
+Color palette: match the references; cream, gray-olive, charcoal-black, pale skin, muted pink blush, restrained wine-red accents only where supported.
+Constraints: strict role-based reference fidelity; fully opaque character with crisp separable edges; no #00ff00 anywhere on the subject; no cast or contact shadow; no pink creature in this master; no code board; no text; no watermark.
+Avoid: floor-length cream robe, long cream front panels reaching the shoes, altered bangs, symmetrical replacement hairstyle, changed hood color blocking, open eyes in the master, detailed painterly rendering, glossy anime rendering, 3D, realistic anatomy, armor, modern clothing, new jewelry, flower bouquet, scarf, snowman, extra characters, scenery.
 ```
 
 Expected: one keyed image only. Save/copy the selected output to `assets/source/cecilia-master-keyed.png`; do not generate variants yet.
@@ -137,7 +150,11 @@ Inspect `assets/pet/cecilia-idle.png` at original resolution and at 280 px displ
 [ ] rounded face proportions match reference
 [ ] wine-red closed-eye lines, diagonal blush, and small open smile match reference
 [ ] line weight/wobble and flat low-saturation coloring match reference
-[ ] lower outfit adds no unsupported costume concept
+[ ] dark cape with cream trim/patches matches the full-body references
+[ ] cream high-neck blouse and wide ruffled sleeves remain separate from the skirt
+[ ] dark short dress/skirt and pale hem ruffle are visible above the knees
+[ ] dark thigh-high socks and small dark shoes match the full-body reference
+[ ] there is no floor-length cream robe, bouquet, scarf, snowman, or second character
 [ ] alpha edge has no green fringe or missing hair chunks
 ```
 
@@ -149,7 +166,7 @@ Run:
 
 ```powershell
 $gitExe = 'C:\Users\30735\.cache\codex-runtimes\codex-primary-runtime\dependencies\native\git\cmd\git.exe'
-& $gitExe add -- assets/references/cecilia-reference-01.jpg assets/source/cecilia-master-keyed.png assets/pet/cecilia-idle.png
+& $gitExe add -- assets/references assets/source/cecilia-master-keyed.png assets/pet/cecilia-idle.png
 & $gitExe -c user.name='Codex' -c user.email='codex@local' commit -m "art: add approved Cecilia master sprite"
 & $gitExe status --short
 ```
@@ -171,7 +188,7 @@ Expected: commit succeeds and `git status --short` is clean.
 - Create: keyed intermediates under `assets/source/`
 
 **Interfaces:**
-- Consumes: user-approved `assets/pet/cecilia-idle.png` and `assets/references/cecilia-reference-01.jpg`.
+- Consumes: user-approved `assets/pet/cecilia-idle.png` and the role-based five-image pack under `assets/references/`.
 - Produces: runtime RGBA assets named exactly as listed; `src/pet-manifest.js` in Task 5 relies on these paths.
 
 - [ ] **Step 1: Inspect both the approved master and original reference before editing**
@@ -188,7 +205,7 @@ Use this exact edit instruction, with a flat `#00ff00` removable background:
 Use case: precise-object-edit
 Asset type: blink frame for a Codex pet sprite
 Primary request: Change only the eyes from the approved closed smile to a brief softly opened expression. Keep the exact same character, pose, silhouette, crop, face, mouth, blush, hair strands, hood partitions, clothing, line weight, colors, and proportions.
-Input images: Image 1 is the approved master edit target; Image 2 is the original fidelity reference.
+Input images: Image 1 is the approved master edit target; supporting reference images retain their Task 1 roles for face/line style, full outfit, cape layers, under-dress, and hair cross-checks.
 Constraints: change only the eyes; flat uniform #00ff00 background; no shadow, text, watermark, pink creature, or new prop.
 ```
 
@@ -201,7 +218,7 @@ Use the same invariant prefix for every call:
 ```text
 Use case: precise-object-edit
 Asset type: state sprite for a Codex interactive pet
-Input images: Image 1 is the user-approved master edit target; Image 2 is the original strict visual reference.
+Input images: Image 1 is the user-approved master edit target; supporting reference images retain their Task 1 roles for face/line style, full outfit, cape layers, under-dress, and hair cross-checks.
 Invariants: preserve the exact character identity, face proportions, bang grouping, one-sided hair-length relationship, cream/black hood partition, clothing construction, outline style, palette, body scale, canvas size, and padding. Do not redesign any feature. Use a perfectly flat uniform #00ff00 removable background with no shadow, floor, gradient, text, or watermark.
 ```
 
@@ -227,7 +244,7 @@ Use the original reference plus this prompt:
 Use case: stylized-concept
 Asset type: occasional companion layer for a Codex pet
 Primary request: Isolate and reconstruct only the small round muted-pink creature held by Cecilia in the original reference, matching its simple white oval eyes, tiny mouth, dark wine-red top marking, soft hand-drawn outline, and low-saturation fill.
-Input images: Image 1 is the sole visual reference for the creature.
+Input images: Image 1 is `assets/references/cecilia-face-style.png` and is the sole visual reference for the creature.
 Composition/framing: creature alone, centered with generous padding, no Cecilia body parts.
 Scene/backdrop: perfectly flat uniform #00ff00 removable background, no floor, shadow, gradient, or texture.
 Constraints: preserve its simple reference appearance; no redesign, limbs only if already implied by the reference; no text or watermark.
@@ -1135,7 +1152,7 @@ window.ceciliaPet.stopDemo();
 
 ## 素材
 
-运行时素材位于 `assets/pet/`。`assets/references/cecilia-reference-01.jpg` 是用户提供的角色参考；`assets/source/` 保留键控源图以便复现去背处理。素材不向外部服务发送。
+运行时素材位于 `assets/pet/`。`assets/references/` 保存用户提供并按角色分工使用的五张人物参考；`assets/source/` 保留键控源图以便复现去背处理。素材不向外部服务发送。
 ````
 
 - [ ] **Step 2: Run automated verification**
