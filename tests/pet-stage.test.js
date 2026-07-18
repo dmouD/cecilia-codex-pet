@@ -3,7 +3,18 @@ import assert from 'node:assert/strict';
 import { PetStage } from '../src/pet-stage.js';
 
 function fakeRoot() {
-  const image = { src: '', alt: '', dataset: {}, onerror: null };
+  const imageClasses = new Set();
+  const image = {
+    src: '',
+    alt: '',
+    dataset: {},
+    onerror: null,
+    classList: {
+      add(className) { imageClasses.add(className); },
+      remove(className) { imageClasses.delete(className); },
+      contains(className) { return imageClasses.has(className); }
+    }
+  };
   const visibleClasses = new Set();
   const buddy = {
     hidden: true,
@@ -26,6 +37,22 @@ function fakeRoot() {
   };
 }
 
+function fakeTimers() {
+  const timers = [];
+  const clearedTimers = [];
+
+  return {
+    timers,
+    clearedTimers,
+    setTimer(callback, duration) {
+      const timer = { callback, duration };
+      timers.push(timer);
+      return timer;
+    },
+    clearTimer(timer) { clearedTimers.push(timer); }
+  };
+}
+
 const assets = {
   idle: '/idle.png',
   idleOpen: '/open.png',
@@ -35,7 +62,7 @@ const assets = {
 
 test('renderer maps known states and falls back to the approved master for unknown states', () => {
   const root = fakeRoot();
-  const stage = new PetStage(root, assets);
+  const stage = new PetStage(root, assets, { transitionMs: 0 });
 
   stage.renderState('thinking');
   assert.equal(root.image.src, '/thinking.png');
@@ -45,6 +72,77 @@ test('renderer maps known states and falls back to the approved master for unkno
   stage.renderState('unknown');
   assert.equal(root.image.src, '/idle.png');
   assert.equal(root.dataset.state, 'unknown');
+});
+
+test('first state renders immediately, then later states fade out before their source changes', () => {
+  const root = fakeRoot();
+  const clock = fakeTimers();
+  const stage = new PetStage(root, assets, { ...clock, transitionMs: 120 });
+
+  stage.renderState('idle');
+  assert.equal(root.image.src, '/idle.png');
+  assert.equal(root.image.classList.contains('is-switching'), false);
+
+  stage.renderState('thinking');
+  assert.equal(root.image.src, '/idle.png');
+  assert.equal(root.image.classList.contains('is-switching'), true);
+  assert.equal(clock.timers[0].duration, 120);
+
+  clock.timers[0].callback();
+  assert.equal(root.image.src, '/thinking.png');
+  assert.equal(root.image.classList.contains('is-switching'), false);
+});
+
+test('a rapid sequence of states commits only the latest source', () => {
+  const root = fakeRoot();
+  const clock = fakeTimers();
+  const stage = new PetStage(root, assets, { ...clock, transitionMs: 120 });
+
+  stage.renderState('idle');
+  stage.renderState('thinking');
+  const staleTimer = clock.timers[0];
+  stage.renderState('clicked');
+  const latestTimer = clock.timers[1];
+
+  assert.deepEqual(clock.clearedTimers, [staleTimer]);
+  staleTimer.callback();
+  assert.equal(root.image.src, '/idle.png');
+  assert.equal(root.image.classList.contains('is-switching'), true);
+
+  latestTimer.callback();
+  assert.equal(root.image.src, '/idle.png');
+  assert.equal(root.image.classList.contains('is-switching'), false);
+});
+
+test('idle eye frames do not replace an image while a state transition is pending', () => {
+  const root = fakeRoot();
+  const clock = fakeTimers();
+  const stage = new PetStage(root, assets, { ...clock, transitionMs: 120 });
+
+  stage.renderState('thinking');
+  stage.renderState('idle');
+  stage.setIdleEyes(true);
+
+  assert.equal(root.image.src, '/thinking.png');
+  clock.timers[0].callback();
+  assert.equal(root.image.src, '/idle.png');
+});
+
+test('reduced motion changes subsequent state images immediately without a transition timer', () => {
+  const root = fakeRoot();
+  const clock = fakeTimers();
+  const stage = new PetStage(root, assets, {
+    ...clock,
+    transitionMs: 120,
+    prefersReducedMotion: () => true
+  });
+
+  stage.renderState('idle');
+  stage.renderState('thinking');
+
+  assert.equal(root.image.src, '/thinking.png');
+  assert.equal(root.image.classList.contains('is-switching'), false);
+  assert.deepEqual(clock.timers, []);
 });
 
 test('image load errors fall back to the approved master only once', () => {
@@ -128,4 +226,21 @@ test('dispose clears a pending companion timer', () => {
   stage.dispose();
 
   assert.deepEqual(clearedTimers, ['timer']);
+});
+
+test('dispose cancels a pending image transition and removes its fading class', () => {
+  const root = fakeRoot();
+  const clock = fakeTimers();
+  const stage = new PetStage(root, assets, { ...clock, transitionMs: 120 });
+
+  stage.renderState('idle');
+  stage.renderState('thinking');
+  const transitionTimer = clock.timers[0];
+  stage.dispose();
+
+  assert.deepEqual(clock.clearedTimers, [transitionTimer]);
+  assert.equal(root.image.classList.contains('is-switching'), false);
+
+  transitionTimer.callback();
+  assert.equal(root.image.src, '/idle.png');
 });
