@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>塞西莉亚 · Codex 宠物</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <main class="pet-app">
+    <header class="pet-header">
+      <div><p class="eyebrow">CODEX COMPANION</p><h1>塞西莉亚</h1></div>
+      <button id="demo-toggle" class="quiet-button" type="button" aria-pressed="true">暂停演示</button>
+    </header>
+    <section id="pet-stage" class="pet-stage" data-state="idle" aria-live="polite">
+      <div id="pet-character" class="pet-character" role="button" tabindex="0" aria-label="点击塞西莉亚进行互动">
+        <img data-pet-image src="./assets/pet/cecilia-idle.png" alt="塞西莉亚宠物：idle" draggable="false">
+      </div>
+      <img data-companion class="companion" src="./assets/pet/pink-companion.png" alt="粉色团子" hidden>
+      <div class="particles" aria-hidden="true"><i></i><i></i><i></i></div>
+      <p id="state-label" class="state-label">待机</p>
+    </section>
+    <nav class="state-controls" aria-label="宠物状态">
+      <button type="button" data-set-state="idle"><span class="control-icon" aria-hidden="true">○</span><span class="control-label">待机</span></button>
+      <button type="button" data-set-state="thinking"><span class="control-icon" aria-hidden="true">?</span><span class="control-label">思考</span></button>
+      <button type="button" data-set-state="coding"><span class="control-icon" aria-hidden="true">&lt;/&gt;</span><span class="control-label">写代码</span></button>
+      <button type="button" data-set-state="success"><span class="control-icon" aria-hidden="true">✓</span><span class="control-label">完成</span></button>
+      <button type="button" data-set-state="error"><span class="control-icon" aria-hidden="true">×</span><span class="control-label">报错</span></button>
+      <button type="button" data-set-state="sleeping"><span class="control-icon" aria-hidden="true">☾</span><span class="control-label">睡觉</span></button>
+    </nav>
+    <p class="hint">点击她会回应；连续点击三次会叫来粉色团子。也可以拖动她。</p>
+  </main>
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>
