@@ -35,6 +35,87 @@ npm run serve
 
 不要直接双击 `index.html`：页面使用 ES modules，部分浏览器会限制 `file://` 页面加载模块。
 
+## Codex 原生 v2 宠物包
+
+仓库同时提供可直接安装到 Codex Pets 的原生动画包，位于 [`codex-pet/cecilia/`](./codex-pet/cecilia/)。它与上面的浏览器宠物互不依赖：浏览器版通过 `window.ceciliaPet` 控制，原生版由 Codex 自己读取 `pet.json` 和 8×11 WebP 图集。
+
+### 安装教程（Windows）
+
+在仓库根目录打开 PowerShell，执行：
+
+```powershell
+$target = Join-Path $env:USERPROFILE '.codex\pets\cecilia'
+New-Item -ItemType Directory -Force -Path $target | Out-Null
+Copy-Item -LiteralPath '.\codex-pet\cecilia\pet.json' -Destination $target -Force
+Copy-Item -LiteralPath '.\codex-pet\cecilia\spritesheet.webp' -Destination $target -Force
+```
+
+随后在 Codex 中打开 **Settings > Pets**：
+
+1. 点击 **Refresh** 重新扫描自定义宠物。
+2. 选择 **塞西莉亚**。
+3. 点击 **Wake Pet**。
+
+安装不会删除内置 `codex` 宠物；需要回退时，在同一页面重新选择内置宠物即可。更新素材时覆盖这两个文件，再点击一次 **Refresh**。
+
+### 原生 manifest 接口
+
+`codex-pet/cecilia/pet.json` 是 Codex 的包入口：
+
+| 字段 | 类型 | 当前值 | 说明 |
+| --- | --- | --- | --- |
+| `id` | `string` | `cecilia` | 自定义宠物的稳定唯一标识；也是安装目录名 |
+| `displayName` | `string` | `塞西莉亚` | Settings > Pets 中显示的名称 |
+| `description` | `string` | 中文说明 | 宠物用途与来源说明 |
+| `spriteVersionNumber` | `number` | `2` | 启用 16 向视线支持的 v2 图集协议 |
+| `spritesheetPath` | `string` | `spritesheet.webp` | 相对 `pet.json` 的 WebP 图集路径 |
+
+文件路径必须保持相对关系：
+
+```text
+%USERPROFILE%\.codex\pets\cecilia\
+├── pet.json
+└── spritesheet.webp
+```
+
+### v2 图集契约
+
+最终图集为 `1536×2288` RGBA WebP，固定 `8` 列、`11` 行，每格 `192×208`。前 9 行是 Codex 标准状态，最后 2 行是 16 个顺时针视线方向：
+
+| 行索引 | 状态/方向 | 使用格数 |
+| --- | --- | --- |
+| `0` | `idle` 待机、呼吸、眨眼；第 5 帧偶发粉色伙伴 | 6 |
+| `1` | `running-right` 向右移动 | 8 |
+| `2` | `running-left` 向左移动 | 8 |
+| `3` | `waving` 挥手/准备回应 | 4 |
+| `4` | `jumping` 成功跳跃 | 5 |
+| `5` | `failed` 失败/受阻 | 8 |
+| `6` | `waiting` 等待用户输入 | 6 |
+| `7` | `running` 正在处理 | 6 |
+| `8` | `review` 审查/思考 | 6 |
+| `9` | `000`、`022.5`、`045`、`067.5`、`090`、`112.5`、`135`、`157.5` | 8 |
+| `10` | `180`、`202.5`、`225`、`247.5`、`270`、`292.5`、`315`、`337.5` | 8 |
+
+角度按屏幕坐标顺时针定义：`000=上`、`090=右`、`180=下`、`270=左`。中性视线单元为第 `0` 行第 `6` 列。开放眼保持浅橄榄灰层次、小焦点、单个奶油白高光和酒红上睫；闭眼帧不带高光。头顶外层与饰边为连续奶油白，深色只用于侧后内衬和披风。
+
+### 校验与预览
+
+- [`codex-pet/qa/contact-sheet.png`](./codex-pet/qa/contact-sheet.png)：11 行完整接触表。
+- [`codex-pet/qa/look-directions.png`](./codex-pet/qa/look-directions.png)：16 方向及面部放大图。
+- [`codex-pet/qa/validation.json`](./codex-pet/qa/validation.json)：结构验证结果；`ok=true`、`sprite_version_number=2`、无错误或警告。
+
+发布文件的 SHA-256：
+
+```text
+B80BF14C822492C4709D4BC5523C972F96DCBC7B831363463C4C14DCF08F94C6  spritesheet.webp
+```
+
+可在 PowerShell 中核对：
+
+```powershell
+Get-FileHash '.\codex-pet\cecilia\spritesheet.webp' -Algorithm SHA256
+```
+
 ## 操作教程
 
 | 操作 | 效果 |
