@@ -98,16 +98,20 @@ Copy-Item -LiteralPath '.\codex-pet\cecilia\spritesheet.webp' -Destination $targ
 
 角度按屏幕坐标顺时针定义：`000=上`、`090=右`、`180=下`、`270=左`。中性视线单元为第 `0` 行第 `6` 列。开放眼保持浅橄榄灰层次、小焦点、单个奶油白高光和酒红上睫；闭眼帧不带高光。头顶外层与饰边为连续奶油白，深色只用于侧后内衬和披风。
 
+当前版本只对第 `1`、`2` 行的 16 个水平移动帧做了局部颜色修复：头顶至后脑的帽身改为与相邻饰边一致的白色，并移除帽身内部深色接缝；帽子外轮廓、深色拖尾披风、裙装、人物比例和动作均保持不变。其余第 `0`、`3`–`10` 行与上一版图集逐像素一致。
+
 ### 校验与预览
 
 - [`codex-pet/qa/contact-sheet.png`](./codex-pet/qa/contact-sheet.png)：11 行完整接触表。
 - [`codex-pet/qa/look-directions.png`](./codex-pet/qa/look-directions.png)：16 方向及面部放大图。
+- [`codex-pet/qa/running-right-hood-white.png`](./codex-pet/qa/running-right-hood-white.png)：向右移动 8 帧的高清帽身改白源图。
+- [`codex-pet/qa/running-left-hood-white.png`](./codex-pet/qa/running-left-hood-white.png)：向左移动 8 帧的高清帽身改白源图。
 - [`codex-pet/qa/validation.json`](./codex-pet/qa/validation.json)：结构验证结果；`ok=true`、`sprite_version_number=2`、无错误或警告。
 
 发布文件的 SHA-256：
 
 ```text
-B80BF14C822492C4709D4BC5523C972F96DCBC7B831363463C4C14DCF08F94C6  spritesheet.webp
+6244822C8D5FE13DDABFE6F37EDF46F0EB126C52BAE255BC34F53902017AF462  spritesheet.webp
 ```
 
 可在 PowerShell 中核对：
