@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { InteractionController, clampPosition, createDragController } from '../src/interaction-controller.js';
 import * as interactionController from '../src/interaction-controller.js';
+import { PetStateMachine } from '../src/pet-state-machine.js';
 
 test('third click inside the window triggers the companion once', () => {
   const calls = [];
@@ -110,6 +111,79 @@ test('drag controller clears click suppression when a real drag is cancelled', (
   listeners.get('pointercancel')({ pointerId: 1 });
 
   assert.equal(drag.consumeSuppressedClick(), false);
+});
+
+test('drag controller reclamps a pet after its stage becomes smaller', () => {
+  const listeners = new Map();
+  const properties = new Map();
+  let bounds = { width: 640, height: 720 };
+  const element = {
+    style: { setProperty(name, value) { properties.set(name, value); } },
+    addEventListener(type, fn) { listeners.set(type, fn); },
+    removeEventListener() {},
+    setPointerCapture() {},
+    parentElement: { getBoundingClientRect: () => bounds },
+    getBoundingClientRect: () => ({ width: 160, height: 280 })
+  };
+  const drag = createDragController(element);
+
+  listeners.get('pointerdown')({ pointerId: 1, clientX: 0, clientY: 0 });
+  listeners.get('pointermove')({ pointerId: 1, clientX: 999, clientY: 999 });
+  assert.equal(properties.get('--pet-x'), '472px');
+  assert.equal(properties.get('--pet-y'), '432px');
+
+  bounds = { width: 320, height: 420 };
+  drag.reclamp();
+
+  assert.equal(properties.get('--pet-x'), '152px');
+  assert.equal(properties.get('--pet-y'), '132px');
+});
+
+test('drag controller reports activity exactly once for each pointer-down', () => {
+  const listeners = new Map();
+  const activities = [];
+  const element = {
+    style: { setProperty() {} },
+    addEventListener(type, fn) { listeners.set(type, fn); },
+    removeEventListener() {},
+    setPointerCapture() {},
+    parentElement: { getBoundingClientRect: () => ({ width: 320, height: 420 }) },
+    getBoundingClientRect: () => ({ width: 160, height: 280 })
+  };
+  createDragController(element, { onActivity() { activities.push('activity'); } });
+
+  listeners.get('pointerdown')({ pointerId: 1, clientX: 10, clientY: 10 });
+  listeners.get('pointermove')({ pointerId: 1, clientX: 100, clientY: 100 });
+  listeners.get('pointerdown')({ pointerId: 2, clientX: 20, clientY: 20 });
+
+  assert.deepEqual(activities, ['activity', 'activity']);
+});
+
+test('drag activity wakes a sleeping state machine and restarts its idle timer', () => {
+  const listeners = new Map();
+  const timers = [];
+  const machine = new PetStateMachine({
+    setTimer(callback) { timers.push(callback); return timers.length; },
+    clearTimer() {},
+    logger: { warn() {} }
+  });
+  const element = {
+    style: { setProperty() {} },
+    addEventListener(type, fn) { listeners.set(type, fn); },
+    removeEventListener() {},
+    setPointerCapture() {},
+    parentElement: { getBoundingClientRect: () => ({ width: 320, height: 420 }) },
+    getBoundingClientRect: () => ({ width: 160, height: 280 })
+  };
+  createDragController(element, { onActivity: () => machine.noteActivity() });
+
+  timers[0]();
+  assert.equal(machine.state, 'sleeping');
+
+  listeners.get('pointerdown')({ pointerId: 1, clientX: 10, clientY: 10 });
+
+  assert.equal(machine.state, 'idle');
+  assert.equal(timers.length, 2);
 });
 
 test('idle companion sampling requires a continuous idle interval and resets on state activity', () => {

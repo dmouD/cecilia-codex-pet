@@ -5,13 +5,14 @@ export function clampPosition(point, bounds, pet, padding = 8) {
   };
 }
 
-export function createDragController(element, { padding = 8 } = {}) {
+export function createDragController(element, { padding = 8, onActivity = () => {} } = {}) {
   let active = null;
   let position = { x: padding, y: padding };
   let suppressClick = false;
 
   function pointerDown(event) {
     active = { id: event.pointerId, x: event.clientX, y: event.clientY, origin: position };
+    onActivity();
     element.setPointerCapture?.(event.pointerId);
   }
 
@@ -23,6 +24,17 @@ export function createDragController(element, { padding = 8 } = {}) {
     const bounds = element.parentElement.getBoundingClientRect();
     const pet = element.getBoundingClientRect();
     position = clampPosition({ x: active.origin.x + dx, y: active.origin.y + dy }, bounds, pet, padding);
+    writePosition();
+  }
+
+  function reclamp() {
+    const bounds = element.parentElement.getBoundingClientRect();
+    const pet = element.getBoundingClientRect();
+    position = clampPosition(position, bounds, pet, padding);
+    writePosition();
+  }
+
+  function writePosition() {
     element.style.setProperty('--pet-x', `${position.x}px`);
     element.style.setProperty('--pet-y', `${position.y}px`);
   }
@@ -48,6 +60,7 @@ export function createDragController(element, { padding = 8 } = {}) {
       suppressClick = false;
       return value;
     },
+    reclamp,
     destroy() {
       element.removeEventListener('pointerdown', pointerDown);
       element.removeEventListener('pointermove', pointerMove);

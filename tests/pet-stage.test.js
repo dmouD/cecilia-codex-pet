@@ -213,6 +213,22 @@ test('showCompanion replaces the previous timer and hides the companion after it
   assert.equal(root.buddy.classList.contains('is-visible'), false);
 });
 
+test('rendering a different state hides a visible companion and clears its timer', () => {
+  const root = fakeRoot();
+  const clock = fakeTimers();
+  const stage = new PetStage(root, assets, { ...clock, transitionMs: 0 });
+
+  stage.showCompanion(200);
+  const companionTimer = clock.timers[0];
+  assert.equal(root.buddy.hidden, false);
+
+  stage.renderState('thinking');
+
+  assert.equal(root.buddy.hidden, true);
+  assert.equal(root.buddy.classList.contains('is-visible'), false);
+  assert.deepEqual(clock.clearedTimers, [companionTimer]);
+});
+
 test('dispose clears a pending companion timer', () => {
   const root = fakeRoot();
   const clearedTimers = [];

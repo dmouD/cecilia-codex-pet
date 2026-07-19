@@ -30,6 +30,7 @@ export class PetStage {
 
   renderState(state) {
     if (this.isDisposed) return;
+    if (state !== this.state) this.#hideCompanion();
     this.state = state;
     this.root.dataset.state = state;
     const src = this.assets[state] ?? this.assets.idle;
@@ -52,15 +53,13 @@ export class PetStage {
     this.companion.classList.add('is-visible');
     if (this.timer !== null) this.clearTimer(this.timer);
     this.timer = this.setTimer(() => {
-      this.companion.classList.remove('is-visible');
-      this.companion.hidden = true;
       this.timer = null;
+      this.#hideCompanion();
     }, durationMs);
   }
 
   dispose() {
-    if (this.timer !== null) this.clearTimer(this.timer);
-    this.timer = null;
+    this.#hideCompanion();
     this.#cancelTransition();
     this.image.classList.remove('is-switching');
     this.isDisposed = true;
@@ -100,5 +99,12 @@ export class PetStage {
     if (this.transitionTimer !== null) this.clearTimer(this.transitionTimer);
     this.transitionTimer = null;
     this.transitionVersion += 1;
+  }
+
+  #hideCompanion() {
+    if (this.timer !== null) this.clearTimer(this.timer);
+    this.timer = null;
+    this.companion.classList.remove('is-visible');
+    this.companion.hidden = true;
   }
 }

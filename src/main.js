@@ -14,7 +14,7 @@ const machine = new PetStateMachine();
 const stage = new PetStage(root, PET_ASSETS);
 const demo = new DemoController({ setState: state => machine.setState(state) });
 const interactions = new InteractionController({ machine, onCompanion: () => stage.showCompanion() });
-const drag = createDragController(character);
+const drag = createDragController(character, { onActivity: () => machine.noteActivity() });
 const idleCompanion = new IdleCompanionController({ onCompanion: () => stage.showCompanion(1400) });
 
 function syncDemoButton() {
@@ -79,11 +79,18 @@ window.ceciliaPet = Object.freeze({
   get state() { return machine.state; }
 });
 
+function reclampPet() {
+  drag.reclamp();
+}
+
+window.addEventListener('resize', reclampPet);
+
 window.addEventListener('beforeunload', () => {
   clearTimeout(blinkTimer);
   clearTimeout(blinkCloseTimer);
   demo.stop();
   interactions.dispose();
+  window.removeEventListener('resize', reclampPet);
   drag.destroy();
   idleCompanion.dispose();
   stage.dispose();
