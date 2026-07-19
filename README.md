@@ -141,6 +141,21 @@ export function syncCeciliaPet(taskState) {
 
 增加新状态时，请同步更新 `src/pet-manifest.js` 的映射、`src/pet-state-machine.js` 的持久状态集合、`src/main.js` 的中文标签、`index.html` 的状态按钮、自动化测试和本 README。
 
+## 项目结构
+
+```text
+.
+├── assets/
+│   ├── pet/          # 浏览器运行时素材
+│   ├── source/       # 键控源图
+│   └── references/   # 创作参考图
+├── src/              # 状态机、交互、演示和渲染逻辑
+├── tests/            # Node.js 自动化测试
+├── index.html        # 页面结构
+├── styles.css        # 页面样式与响应式规则
+└── README.md         # 使用和接口文档
+```
+
 ## 测试
 
 ```bash

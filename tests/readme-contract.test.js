@@ -13,6 +13,7 @@ test('README contains the progressive user and developer guide', () => {
     '## JavaScript API',
     '## \u63a5\u5165 Codex \u6216\u5176\u4ed6\u4efb\u52a1\u7cfb\u7edf',
     '## \u7d20\u6750\u4e0e\u5b9a\u5236',
+    '## \u9879\u76ee\u7ed3\u6784',
     '## \u5e38\u89c1\u95ee\u9898',
     '## \u9690\u79c1\u4e0e\u7248\u6743'
   ]) {
@@ -29,10 +30,14 @@ test('README documents the complete public API and state contract', () => {
   }
   assert.match(readme, /\u6210\u529f\u8fd4\u56de `true`/);
   assert.match(readme, /\u672a\u77e5\u72b6\u6001\u8fd4\u56de `false`/);
+  assert.match(
+    readme,
+    /`clicked` \u662f\u5185\u90e8\u4ea4\u4e92\u72b6\u6001.*?window\.ceciliaPet\.setState\('clicked'\).*?\u8fd4\u56de `false`/s
+  );
 });
 
 test('README is portable and documents validation, fallback, privacy, and rights', () => {
-  assert.doesNotMatch(readme, /[A-Za-z]:[\\/]+Users[\\/]/);
+  assert.doesNotMatch(readme, /(?:^|[\s`("'=])(?:[A-Za-z]:[\\/]|\/(?:home|Users)\/[^/\s`)}\]]+(?:\/[^\s`)}\]]*)?)/);
   assert.match(readme, /assets\/pet\/cecilia-idle\.png/);
   assert.match(readme, /npm run serve/);
   assert.match(readme, /npm test/);
