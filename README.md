@@ -85,7 +85,7 @@ console.log(changed); // true
 console.log(window.ceciliaPet.state); // "coding"
 ```
 
-参数必须是六种持久状态之一。调用会停止演示、清除临时状态并切换角色图片。成功返回 `true`；未知状态返回 `false`，页面保持原状态；`clicked` 是内部交互状态，`window.ceciliaPet.setState('clicked')` 也返回 `false`。
+参数必须是六种持久状态之一。调用会停止演示、清除临时状态并切换角色图片。成功返回 `true`；未知状态返回 `false`，页面保持原状态，并在控制台对同一未知值最多警告一次；`clicked` 是内部交互状态，`window.ceciliaPet.setState('clicked')` 也返回 `false`。
 
 ### `startDemo()`
 

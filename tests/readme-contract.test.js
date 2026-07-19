@@ -4,6 +4,37 @@ import { readFileSync } from 'node:fs';
 
 const readme = readFileSync(new URL('../README.md', import.meta.url), 'utf8');
 
+function containsLocalAbsolutePath(text) {
+  return /(?<![A-Za-z])[A-Za-z]:[\\/]|\\\\[^\\/\s]+[\\/][^\s`)}\]]+|file:\/\/\/(?:[A-Za-z]:[\\/]|[^/\s`)}\]]+)|(?:^|[\s`("'=])\/(?!\/)[^\s`)}\]]+/.test(text);
+}
+
+test('local absolute path guard distinguishes local and portable documentation paths', () => {
+  for (const path of [
+    String.raw`C:\repo\cecilia`,
+    'D:/repo/cecilia',
+    String.raw`\\server\share\cecilia`,
+    '/tmp/cecilia',
+    '/opt/cecilia',
+    '/etc/cecilia',
+    '/home/name/cecilia',
+    '/Users/name/cecilia',
+    'file:///tmp/cecilia',
+    'file:///C:/repo/cecilia'
+  ]) {
+    assert.ok(containsLocalAbsolutePath(path), `should reject local absolute path: ${path}`);
+  }
+
+  for (const path of [
+    'https://example.com/guide',
+    'http://localhost:4173/',
+    './assets/pet/cecilia-idle.png',
+    'src/pet-state-machine.js',
+    'file://'
+  ]) {
+    assert.ok(!containsLocalAbsolutePath(path), `should allow portable path: ${path}`);
+  }
+});
+
 test('README contains the progressive user and developer guide', () => {
   for (const heading of [
     '## \u529f\u80fd\u7279\u8272',
@@ -30,6 +61,7 @@ test('README documents the complete public API and state contract', () => {
   }
   assert.match(readme, /\u6210\u529f\u8fd4\u56de `true`/);
   assert.match(readme, /\u672a\u77e5\u72b6\u6001\u8fd4\u56de `false`/);
+  assert.match(readme, /\u5bf9\u540c\u4e00\u672a\u77e5\u503c\u6700\u591a\u8b66\u544a\u4e00\u6b21/);
   assert.match(
     readme,
     /`clicked` \u662f\u5185\u90e8\u4ea4\u4e92\u72b6\u6001.*?window\.ceciliaPet\.setState\('clicked'\).*?\u8fd4\u56de `false`/s
@@ -37,7 +69,7 @@ test('README documents the complete public API and state contract', () => {
 });
 
 test('README is portable and documents validation, fallback, privacy, and rights', () => {
-  assert.doesNotMatch(readme, /(?:^|[\s`("'=])(?:[A-Za-z]:[\\/]|\/(?:home|Users)\/[^/\s`)}\]]+(?:\/[^\s`)}\]]*)?)/);
+  assert.ok(!containsLocalAbsolutePath(readme), 'README must not contain local absolute paths');
   assert.match(readme, /assets\/pet\/cecilia-idle\.png/);
   assert.match(readme, /npm run serve/);
   assert.match(readme, /npm test/);
